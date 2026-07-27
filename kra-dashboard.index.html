@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KRA Command Deck — FY26-27</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e1217;
+    --panel:#161c24;
+    --panel-2:#1c232c;
+    --border:#2a3240;
+    --border-soft:#212832;
+    --text:#e8ecf1;
+    --text-dim:#8b95a3;
+    --text-faint:#576172;
+    --amber:#e8a33d;
+    --amber-dim:#5c4a29;
+    --teal:#4bc9b5;
+    --teal-dim:#204b45;
+    --danger:#e2665c;
+    --danger-dim:#4a2624;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 500px at 15% -10%, rgba(72,201,181,0.06), transparent),
+      radial-gradient(900px 500px at 100% 0%, rgba(232,163,61,0.05), transparent),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding:32px 40px 80px;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  .display{ font-family:'Space Grotesk', sans-serif; }
+
+  /* ===== Header ===== */
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:24px;
+    margin-bottom:36px;
+    flex-wrap:wrap;
+  }
+  .brand-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:28px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  .subhead{
+    color:var(--text-dim);
+    font-size:13.5px;
+    margin-top:6px;
+    max-width:520px;
+    line-height:1.5;
+  }
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap:22px;
+  }
+  select#periodSelect{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    padding:9px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    outline:none;
+  }
+  select#periodSelect:focus{ border-color:var(--teal); }
+
+  /* ===== Gauge ===== */
+  .gauge-wrap{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:14px 22px 14px 14px;
+  }
+  .gauge-label{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+  }
+  .gauge-label .val{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:26px;
+    font-weight:700;
+  }
+  .gauge-label .cap{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+  }
+
+  /* ===== KRA grid ===== */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(460px, 1fr));
+    gap:18px;
+  }
+  .kra-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .kra-head{
+    padding:18px 20px 14px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .kra-top-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+  }
+  .kra-title{
+    display:flex;
+    gap:10px;
+    align-items:baseline;
+  }
+  .kra-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--text-faint);
+  }
+  .kra-name{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:15.5px;
+    font-weight:600;
+    line-height:1.3;
+  }
+  .kra-meta{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-shrink:0;
+  }
+  .badge{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    padding:3px 8px;
+    border-radius:20px;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .badge.weight{ color:var(--amber); border-color:var(--amber-dim); }
+
+  .kra-score-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:14px;
+  }
+  .kra-bar-track{
+    flex:1;
+    height:6px;
+    background:var(--panel-2);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .kra-bar-fill{
+    height:100%;
+    border-radius:4px;
+    background:var(--teal);
+    transition:width .35s ease;
+  }
+  .kra-score-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    font-weight:600;
+    width:44px;
+    text-align:right;
+  }
+
+  /* ===== KPI rows ===== */
+  .kpi-list{ display:flex; flex-direction:column; }
+  .kpi-row{ border-bottom:1px solid var(--border-soft); }
+  .kpi-row:last-child{ border-bottom:none; }
+  .kpi-summary{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 20px;
+    cursor:pointer;
+  }
+  .kpi-summary:hover{ background:rgba(255,255,255,0.02); }
+  .chev{
+    font-size:10px;
+    color:var(--text-faint);
+    transition:transform .2s ease;
+    flex-shrink:0;
+    width:10px;
+  }
+  .kpi-row.open .chev{ transform:rotate(90deg); }
+  .kpi-name{
+    flex:1;
+    font-size:13px;
+    line-height:1.4;
+    color:var(--text);
+  }
+  .kpi-name .flag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9.5px;
+    color:var(--text-faint);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:1px 5px;
+    margin-left:6px;
+  }
+  .status-dot{
+    width:7px; height:7px; border-radius:50%;
+    flex-shrink:0;
+  }
+  .status-dot.on{ background:var(--teal); }
+  .status-dot.risk{ background:var(--amber); }
+  .status-dot.off{ background:var(--danger); }
+
+  .kpi-input-wrap{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    flex-shrink:0;
+  }
+  .kpi-input{
+    width:52px;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    padding:5px 6px;
+    border-radius:6px;
+    text-align:right;
+    outline:none;
+  }
+  .kpi-input:focus{ border-color:var(--teal); }
+  .pct-sign{ font-size:11px; color:var(--text-faint); font-family:'IBM Plex Mono', monospace; }
+
+  .kpi-detail{
+    display:none;
+    padding:2px 20px 18px 42px;
+  }
+  .kpi-row.open .kpi-detail{ display:block; }
+  .target-line{
+    font-size:12px;
+    color:var(--text-dim);
+    line-height:1.5;
+    padding:8px 12px;
+    background:var(--panel-2);
+    border-left:2px solid var(--teal-dim);
+    border-radius:0 6px 6px 0;
+    margin-bottom:14px;
+  }
+  .detail-section{ margin-bottom:14px; }
+  .detail-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin-bottom:8px;
+  }
+  .comment-item, .doc-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    padding:8px 10px;
+    background:var(--panel-2);
+    border-radius:7px;
+    margin-bottom:6px;
+    font-size:12px;
+  }
+  .comment-item .body{ flex:1; }
+  .comment-item .txt{ color:var(--text); line-height:1.45; }
+  .comment-item .meta{ color:var(--text-faint); font-family:'IBM Plex Mono', monospace; font-size:10px; margin-top:3px; }
+  .doc-item a{ color:var(--teal); text-decoration:none; font-weight:500; }
+  .doc-item a:hover{ text-decoration:underline; }
+  .doc-item .meta{ color:var(--text-faint); font-family:'IBM Plex Mono', monospace; font-size:10px; margin-top:2px; }
+  .del-btn{
+    background:none; border:none; color:var(--text-faint);
+    cursor:pointer; font-size:14px; line-height:1; padding:2px 4px;
+    flex-shrink:0;
+  }
+  .del-btn:hover{ color:var(--danger); }
+  .empty-note{ font-size:11.5px; color:var(--text-faint); font-style:italic; padding:2px 2px 6px; }
+
+  .add-row{
+    display:flex;
+    gap:6px;
+    margin-top:4px;
+  }
+  .add-row textarea, .add-row input{
+    flex:1;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    font-size:12px;
+    padding:8px 10px;
+    border-radius:7px;
+    outline:none;
+    resize:none;
+  }
+  .add-row input.doc-url{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; }
+  .add-row textarea:focus, .add-row input:focus{ border-color:var(--teal); }
+  .add-btn{
+    background:var(--teal-dim);
+    color:var(--teal);
+    border:1px solid var(--teal-dim);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    padding:0 14px;
+    border-radius:7px;
+    cursor:pointer;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .add-btn:hover{ background:var(--teal); color:#0e1217; }
+  .doc-add-row{ display:flex; flex-direction:column; gap:6px; }
+  .doc-add-row .fields{ display:flex; gap:6px; }
+
+  footer{
+    max-width:1200px;
+    margin:36px auto 0;
+    text-align:center;
+    color:var(--text-faint);
+    font-size:11px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  #saveIndicator{
+    position:fixed;
+    bottom:18px;
+    right:22px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-faint);
+    opacity:0;
+    transition:opacity .3s ease;
+  }
+  #saveIndicator.show{ opacity:1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand-eyebrow">CSM Performance · FY 26-27</div>
+    <h1>KRA Command Deck</h1>
+    <p class="subhead">Track achievement against each KRA/KPI period over period, log context in comments, and attach supporting evidence.</p>
+  </div>
+  <div class="header-right">
+    <select id="periodSelect"></select>
+    <div class="gauge-wrap">
+      <svg id="gaugeSvg" width="64" height="64" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="27" fill="none" stroke="#1c232c" stroke-width="7"/>
+        <circle id="gaugeArc" cx="32" cy="32" r="27" fill="none" stroke="#4bc9b5" stroke-width="7"
+          stroke-linecap="round" transform="rotate(-90 32 32)" stroke-dasharray="169.6" stroke-dashoffset="169.6"/>
+      </svg>
+      <div class="gauge-label">
+        <span class="val mono" id="gaugeVal">0%</span>
+        <span class="cap">Weighted score</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="grid" id="kraGrid"></div>
+
+<footer>Data stored privately to your account · nothing here is shared with your team</footer>
+<div id="saveIndicator" class="mono">saved</div>
+
+<script>
+/* ---------------- KRA / KPI definitions (from CST KRAs_KPIs FY 26-27) ---------------- */
+const KRAS = [
+  {
+    id:'k1', num:1, name:'Customer Onboarding & Implementation of New Modules and CRM',
+    weight:25, freq:'Monthly / Quarterly',
+    kpis:[
+      {id:'k1-1', name:'% of onboardings completed within SLA', target:'>95% of onboardings completed on time (Upsell/Cross Sell included)'},
+      {id:'k1-2', name:'No. of training sessions/workshops conducted', bau:true, target:'Ongoing BAU cadence of training sessions/workshops per client'},
+      {id:'k1-3', name:'Project Go-Live Success Rate', target:'100% project Go-Lives as per contract and MSA'},
+      {id:'k1-4', name:'No. of check-ins conducted per client/month', target:'Consistent monthly check-in cadence per client'},
+      {id:'k1-5', name:'No. of success stories or referrals', target:'≥3 referrals + 2 case studies per quarter'},
+    ]
+  },
+  {
+    id:'k2', num:2, name:'Product Adoption, Issue Resolution & Engagement',
+    weight:15, freq:'Monthly / Quarterly',
+    kpis:[
+      {id:'k2-1', name:'Feature adoption % increase', target:'≥80% feature adoption rate in key accounts'},
+      {id:'k2-2', name:'No. of MBRs/QBRs conducted', target:'Conduct QBRs for 95% of clients/quarter'},
+      {id:'k2-3', name:'% of active users vs. licenses', target:'70%+ monthly active usage rate'},
+      {id:'k2-4', name:'Account Strategy Deck preparation', bau:true, target:'100% decks submitted ≥48 hrs before leadership meet, aligned to SOPs, rated ≥4/5 in quality audits'},
+      {id:'k2-5', name:'Avg. SLA breach %', target:'95% escalations resolved within SLA timeline'},
+      {id:'k2-6', name:'No. of escalations resolved', bau:true, target:'100% RCA for recurring issues for x16 and above · Overall Account Summarized Asana SLA under >85%'},
+    ]
+  },
+  {
+    id:'k3', num:3, name:'Retention & Renewals',
+    weight:10, freq:'Quarterly / Monthly',
+    kpis:[
+      {id:'k3-1', name:'Customer retention rate', target:'≥95% retention of the current set of assigned accounts'},
+      {id:'k3-2', name:'Renewal closure % before due date', target:'100% renewal closure on time'},
+      {id:'k3-3', name:'% of on-time payments', target:'>95% payments on time from current customers'},
+    ]
+  },
+  {
+    id:'k4', num:4, name:'Upselling & Cross-Selling',
+    weight:20, freq:'Monthly / Quarterly',
+    kpis:[
+      {id:'k4-1', name:'Upsell/Cross-sell Pipeline generation', target:'Creating 3x pipeline for quarterly achievement, and follow-up on the closures'},
+      {id:'k4-2', name:'No. of accounts with upsell discussions', target:'Creating 3x pipeline for quarterly achievement, and follow-up on the closures'},
+    ]
+  },
+  {
+    id:'k5', num:5, name:'Data-Driven Insights & Reporting & AI Adoption & Team Capability Building',
+    weight:20, freq:'Monthly',
+    kpis:[
+      {id:'k5-1', name:'NPS, CSAT and SKAM trend analysis & tracking', target:'Quarterly health/adoption reports, SKAM/POD presentation · ≥80% promoters in NPS and CSAT'},
+      {id:'k5-2', name:'Strategic and business insight discussion with right stakeholder', target:'Quarterly health/adoption reports, SKAM/POD presentation · ≥80% promoters in NPS and CSAT'},
+      {id:'k5-3', name:'Adoption/Health Score tracking', target:'Drive adoption of AI tools across the team — automate ≥3 recurring manual tasks (MoM, health checks, QBR prep) per CSM/quarter'},
+      {id:'k5-4', name:'AI Tool Integration in Core CS Workflows', target:'Integrate AI into QBR prep, health checks, email drafting, MoM generation & reporting — ≥3 workflows AI-assisted by quarter end, with measurable time/quality gains'},
+      {id:'k5-5', name:'Continuous Learning & Skill Building', target:'Build demonstrable AI, product & growth skills via structured self-learning; contribute to team AI playbook'},
+    ]
+  },
+  {
+    id:'k6', num:6, name:'Internal Collaboration & People Management & Industry Engagement',
+    weight:10, freq:'Monthly / Quarterly',
+    kpis:[
+      {id:'k6-1', name:'No. of team feedback sessions, Regular Vridhi', target:'1 team 1x1/month'},
+      {id:'k6-2', name:'Participation in hiring/appraisals', target:'Quarterly Vridhi, Appraisals'},
+      {id:'k6-3', name:'Inputs to Product from client feedback', target:'Contribute to 2+ process improvements/quarter'},
+      {id:'k6-4', name:'Participate actively in LinkedIn/other platforms to promote thought leadership', bau:true, target:'≥2 posts/articles per month related to product, CX, or industry'},
+      {id:'k6-5', name:'Represent company in forums, webinars, or conferences', bau:true, target:'2 client success spotlights shared internally or externally/quarter'},
+    ]
+  },
+];
+
+/* ---------------- Period setup: FY 26-27 = Apr'26 – Mar'27 ---------------- */
+const MONTH_NAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function buildPeriods(){
+  const periods=[];
+  let y=2026, m=3; // April = index 3
+  for(let i=0;i<12;i++){
+    const key=`${y}-${String(m+1).padStart(2,'0')}`;
+    periods.push({key, label:`${MONTH_NAMES[m]} '${String(y).slice(2)}`});
+    m++; if(m>11){m=0; y++;}
+  }
+  return periods;
+}
+const PERIODS = buildPeriods();
+function currentPeriodKey(){
+  const now=new Date();
+  const key=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  return PERIODS.some(p=>p.key===key) ? key : PERIODS[0].key;
+}
+
+/* ---------------- State ---------------- */
+let state = { periods:{}, comments:{}, docs:{} };
+let selectedPeriod = currentPeriodKey();
+const STORAGE_KEY = 'kra-dashboard-state-v1';
+
+async function loadState(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      state = Object.assign({periods:{}, comments:{}, docs:{}}, parsed);
+    }
+  }catch(e){
+    // no existing state yet — start fresh
+  }
+  render();
+}
+
+let saveTimer=null;
+async function saveState(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+    flashSaved();
+  }catch(e){
+    console.error('Storage error', e);
+  }
+}
+function flashSaved(){
+  const el=document.getElementById('saveIndicator');
+  el.textContent='saved · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  el.classList.add('show');
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>el.classList.remove('show'), 1600);
+}
+
+/* ---------------- Data helpers ---------------- */
+function getAchievement(kpiId, period){
+  const p = state.periods[period];
+  if(!p || typeof p[kpiId] !== 'number') return null;
+  return p[kpiId];
+}
+function setAchievement(kpiId, period, value){
+  if(!state.periods[period]) state.periods[period]={};
+  state.periods[period][kpiId]=value;
+}
+function statusFor(val){
+  if(val===null) return {cls:'off', label:'No data'};
+  if(val>=85) return {cls:'on', label:'On track'};
+  if(val>=60) return {cls:'risk', label:'At risk'};
+  return {cls:'off', label:'Off track'};
+}
+function kraAverage(kra, period){
+  const vals = kra.kpis.map(k=>getAchievement(k.id, period)).filter(v=>v!==null);
+  if(vals.length===0) return null;
+  return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+}
+function overallScore(period){
+  let sum=0, weightUsed=0;
+  KRAS.forEach(kra=>{
+    const avg = kraAverage(kra, period);
+    if(avg!==null){ sum += avg*kra.weight; weightUsed += kra.weight; }
+  });
+  if(weightUsed===0) return 0;
+  // scale by weight actually used so partial entry doesn't crater the score
+  return Math.round(sum/100);
+}
+
+/* ---------------- Rendering ---------------- */
+function renderPeriodSelect(){
+  const sel=document.getElementById('periodSelect');
+  sel.innerHTML = PERIODS.map(p=>`<option value="${p.key}" ${p.key===selectedPeriod?'selected':''}>${p.label}</option>`).join('');
+  sel.onchange = ()=>{ selectedPeriod = sel.value; render(); };
+}
+
+function renderGauge(){
+  const score = overallScore(selectedPeriod);
+  const circumference = 169.6;
+  const offset = circumference - (Math.min(score,100)/100)*circumference;
+  const arc=document.getElementById('gaugeArc');
+  arc.style.strokeDashoffset = offset;
+  arc.style.stroke = score>=85 ? '#4bc9b5' : score>=60 ? '#e8a33d' : '#e2665c';
+  document.getElementById('gaugeVal').textContent = score+'%';
+}
+
+function esc(str){
+  return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function render(){
+  renderPeriodSelect();
+  renderGauge();
+  const grid=document.getElementById('kraGrid');
+  grid.innerHTML = KRAS.map(kra=>{
+    const avg = kraAverage(kra, selectedPeriod);
+    const avgDisplay = avg===null ? '—' : avg+'%';
+    const barColor = avg===null ? '#2a3240' : avg>=85 ? 'var(--teal)' : avg>=60 ? 'var(--amber)' : 'var(--danger)';
+    return `
+    <div class="kra-card">
+      <div class="kra-head">
+        <div class="kra-top-row">
+          <div class="kra-title">
+            <span class="kra-num mono">KRA ${kra.num}</span>
+            <span class="kra-name">${esc(kra.name)}</span>
+          </div>
+          <div class="kra-meta">
+            <span class="badge weight">${kra.weight}%</span>
+            <span class="badge">${esc(kra.freq)}</span>
+          </div>
+        </div>
+        <div class="kra-score-row">
+          <div class="kra-bar-track"><div class="kra-bar-fill" style="width:${avg||0}%; background:${barColor}"></div></div>
+          <span class="kra-score-num mono">${avgDisplay}</span>
+        </div>
+      </div>
+      <div class="kpi-list">
+        ${kra.kpis.map(kpi=>renderKpiRow(kpi)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  // wire up interactions after DOM is built
+  KRAS.forEach(kra=>kra.kpis.forEach(kpi=>wireKpiRow(kpi)));
+}
+
+function renderKpiRow(kpi){
+  const val = getAchievement(kpi.id, selectedPeriod);
+  const st = statusFor(val);
+  return `
+  <div class="kpi-row" id="row-${kpi.id}">
+    <div class="kpi-summary" data-toggle="${kpi.id}">
+      <span class="chev">▶</span>
+      <span class="status-dot ${st.cls}" title="${st.label}"></span>
+      <span class="kpi-name">${esc(kpi.name)}${kpi.bau?'<span class="flag">BAU</span>':''}</span>
+      <div class="kpi-input-wrap" onclick="event.stopPropagation()">
+        <input type="number" min="0" max="150" class="kpi-input" id="input-${kpi.id}" value="${val===null?'':val}" placeholder="—" data-kpi="${kpi.id}">
+        <span class="pct-sign">%</span>
+      </div>
+    </div>
+    <div class="kpi-detail" id="detail-${kpi.id}">
+      <div class="target-line">${esc(kpi.target)}</div>
+
+      <div class="detail-section">
+        <div class="detail-label">Comments</div>
+        <div id="comments-${kpi.id}"></div>
+        <div class="add-row">
+          <textarea rows="1" id="commentInput-${kpi.id}" placeholder="Add a note or context…"></textarea>
+          <button class="add-btn" data-add-comment="${kpi.id}">Add</button>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-label">Documents</div>
+        <div id="docs-${kpi.id}"></div>
+        <div class="doc-add-row">
+          <div class="fields">
+            <input type="text" id="docName-${kpi.id}" placeholder="Document name">
+            <input type="text" class="doc-url" id="docUrl-${kpi.id}" placeholder="Link (Drive, Asana, etc.)">
+            <button class="add-btn" data-add-doc="${kpi.id}">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderComments(kpiId){
+  const list = (state.comments[kpiId]||[]).slice().reverse();
+  const el=document.getElementById(`comments-${kpiId}`);
+  if(list.length===0){ el.innerHTML='<div class="empty-note">No comments yet</div>'; return; }
+  el.innerHTML = list.map(c=>`
+    <div class="comment-item">
+      <div class="body">
+        <div class="txt">${esc(c.text)}</div>
+        <div class="meta">${esc(c.periodLabel||'')} · ${esc(c.date)}</div>
+      </div>
+      <button class="del-btn" data-del-comment="${kpiId}" data-cid="${c.id}">✕</button>
+    </div>`).join('');
+}
+
+function renderDocs(kpiId){
+  const list = (state.docs[kpiId]||[]).slice().reverse();
+  const el=document.getElementById(`docs-${kpiId}`);
+  if(list.length===0){ el.innerHTML='<div class="empty-note">No documents attached</div>'; return; }
+  el.innerHTML = list.map(d=>`
+    <div class="doc-item">
+      <div class="body">
+        <a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.name)}</a>
+        <div class="meta">${esc(d.date)}</div>
+      </div>
+      <button class="del-btn" data-del-doc="${kpiId}" data-did="${d.id}">✕</button>
+    </div>`).join('');
+}
+
+function wireKpiRow(kpi){
+  const row=document.getElementById(`row-${kpi.id}`);
+  const summary=row.querySelector('.kpi-summary');
+  summary.addEventListener('click', ()=>{
+    const wasOpen = row.classList.contains('open');
+    row.classList.toggle('open');
+    if(!wasOpen){ renderComments(kpi.id); renderDocs(kpi.id); }
+  });
+
+  const input=document.getElementById(`input-${kpi.id}`);
+  input.addEventListener('change', ()=>{
+    const raw=input.value.trim();
+    if(raw===''){
+      if(state.periods[selectedPeriod]) delete state.periods[selectedPeriod][kpi.id];
+    } else {
+      let v=Math.max(0, Math.min(150, Number(raw)));
+      setAchievement(kpi.id, selectedPeriod, v);
+    }
+    saveState();
+    render();
+  });
+
+  row.querySelector(`[data-add-comment="${kpi.id}"]`).addEventListener('click', ()=>{
+    const ta=document.getElementById(`commentInput-${kpi.id}`);
+    const text=ta.value.trim();
+    if(!text) return;
+    if(!state.comments[kpi.id]) state.comments[kpi.id]=[];
+    const periodObj = PERIODS.find(p=>p.key===selectedPeriod);
+    state.comments[kpi.id].push({
+      id: 'c'+Date.now(),
+      text,
+      periodLabel: periodObj?periodObj.label:'',
+      date: new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})
+    });
+    ta.value='';
+    saveState();
+    renderComments(kpi.id);
+  });
+
+  row.querySelector(`[data-add-doc="${kpi.id}"]`).addEventListener('click', ()=>{
+    const nameEl=document.getElementById(`docName-${kpi.id}`);
+    const urlEl=document.getElementById(`docUrl-${kpi.id}`);
+    const name=nameEl.value.trim();
+    let url=urlEl.value.trim();
+    if(!name || !url) return;
+    if(!/^https?:\/\//i.test(url)) url='https://'+url;
+    if(!state.docs[kpi.id]) state.docs[kpi.id]=[];
+    state.docs[kpi.id].push({
+      id:'d'+Date.now(),
+      name, url,
+      date:new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})
+    });
+    nameEl.value=''; urlEl.value='';
+    saveState();
+    renderDocs(kpi.id);
+  });
+}
+
+// event delegation for delete buttons (rebuilt on every render of comments/docs)
+document.addEventListener('click', (e)=>{
+  const dc=e.target.closest('[data-del-comment]');
+  if(dc){
+    const kpiId=dc.getAttribute('data-del-comment');
+    const cid=dc.getAttribute('data-cid');
+    state.comments[kpiId] = (state.comments[kpiId]||[]).filter(c=>c.id!==cid);
+    saveState();
+    renderComments(kpiId);
+  }
+  const dd=e.target.closest('[data-del-doc]');
+  if(dd){
+    const kpiId=dd.getAttribute('data-del-doc');
+    const did=dd.getAttribute('data-did');
+    state.docs[kpiId] = (state.docs[kpiId]||[]).filter(d=>d.id!==did);
+    saveState();
+    renderDocs(kpiId);
+  }
+});
+
+loadState();
+</script>
+</body>
+</html>
